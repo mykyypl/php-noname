@@ -1,6 +1,8 @@
 <?php
 
 include("/administrator/config.php");
+if (is_resource($db)) {
+
 session_start();
 
 if($_SERVER["REQUEST_METHOD"] == "POST")
@@ -25,7 +27,7 @@ if($count==1)
 session_register("myusername");
 $_SESSION['login_user']=$myusername;
 
-header("location: index.php");
+header("location: /administrator/index.php");
 }
 else 
 {
@@ -87,3 +89,9 @@ border:#666666 solid 1px;
 
 </body>
 </html>
+<?php
+}
+else {
+    echo"Brak połączenia z bazą danych!";
+
+}?>

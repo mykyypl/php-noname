@@ -1,5 +1,7 @@
 <?php
 include('/administrator/config.php');
+if (is_resource($db)) {
+
 session_start();
 $user_check=$_SESSION['login_user'];
 
@@ -11,6 +13,11 @@ $login_session=$row['username'];
 
 if(!isset($login_session))
 {
-header("Location: login.php");
+header("Location: /administrator/login.php");
+}
+}
+else {
+    echo"Brak połączenia z bazą danych!";
+
 }
 ?>
