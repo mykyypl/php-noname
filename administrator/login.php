@@ -1,91 +1,88 @@
 <?php
-include("/administrator/config.php");
-if (is_resource($db)) {
-
-    session_start();
-
-    if ($_SERVER["REQUEST_METHOD"] == "POST") {
-// username and password sent from form 
-
-        $myusername = addslashes($_POST['username']);
-        $mypassword = addslashes($_POST['password']);
-
-
-        $sql = "SELECT id FROM admin WHERE username='$myusername' and passcode='$mypassword'";
-        $result = mysql_query($sql);
-        $row = mysql_fetch_array($result);
-        $active = $row['active'];
-
-        $count = mysql_num_rows($result);
-
-
-// If result matched $myusername and $mypassword, table row must be 1 row
-        if ($count == 1) {
-            session_register("myusername");
-            $_SESSION['login_user'] = $myusername;
-
-            header("location: /administrator/index.php");
-        } else {
-            $error = "Your Login Name or Password is invalid";
-        }
-    }
-    ?>
-
-    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-    <html xmlns="http://www.w3.org/1999/xhtml">
-        <head>
-            <meta http-equiv="Content-Type" content="text/html" charset="UTF-8" />
-            <title>Login Page</title>
-
-            <style type="text/css">
-                body
-                {
-                    font-family:Arial, Helvetica, sans-serif;
-                    font-size:14px;
-
-                }
-                label
-                {
-                    font-weight:bold;
-
-                    width:100px;
-                    font-size:14px;
-
-                }
-                .box
-                {
-                    border:#666666 solid 1px;
-
-                }
-            </style>
-        </head>
-        <body bgcolor="#FFFFFF">
-            <div><h3>Tutorial link <a href="">Click Here</a></h3></div>
-
-            <div style="font-weight:bold; margin-bottom:10px">Demo Login Details -> Username : <a href="#">test</a>  Password : <a href="#">test</a></div>
-
-            <div align="center">
-                <div style="width:300px; border: solid 1px #333333; " align="left">
-                    <div style="background-color:#333333; color:#FFFFFF; padding:3px;"><b>Login</b></div>
-
-
-                    <div style="margin:30px">
-
-                        <form action="" method="post">
-                            <label>UserName  :</label><input type="text" name="username" class="box"/><br /><br />
-                            <label>Password  :</label><input type="password" name="password" class="box" /><br/><br />
-                            <input type="submit" value=" Submit "/><br />
-
-                        </form>
-                        <div style="font-size:11px; color:#cc0000; margin-top:10px"><?php echo $error; ?></div>
-                    </div>
-                </div>
-            </div>
-
-        </body>
-    </html>
-    <?php
-} else {
-    echo"Brak połączenia z bazą danych!";
-}
+  session_start();
+  if(isset($_SESSION['LOGIN_STATUS']) && !empty($_SESSION['LOGIN_STATUS'])){
+      header('location:index.php');
+  }
 ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>PHP Ajax Login Validation Tutorial | 91 Web Lessons</title>
+<link rel="stylesheet" type="text/css" href="css/style.css" />
+<script type="text/javascript" src="js/jquery-1.4.1.min.js"></script>
+<script type="text/javascript">
+function validLogin(){
+      var uname=$('#uname').val();
+      var password=$('#password').val();
+
+      var dataString = 'uname='+ uname + '&password='+ password;
+      $("#flash").show();
+      $("#flash").fadeIn(400).html('<img src="image/loading.gif" />');
+      $.ajax({
+      type: "POST",
+      url: "processed.php",
+      data: dataString,
+      cache: false,
+      success: function(result){
+               var result=trim(result);
+               $("#flash").hide();
+               if(result=='correct'){
+                     window.location='index.php';
+               }else{
+                     $("#errorMessage").html(result);
+               }
+      }
+      });
+}
+
+function trim(str){
+     var str=str.replace(/^\s+|\s+$/,'');
+     return str;
+}
+</script>
+</head>
+<body>
+<div id="container">
+    <!--top section start-->
+    <div id='top'>
+         <a href="http://www.91weblessons.com" title="91 Web Lessons" target="blank">
+             <img src="image/logo.png" alt="91 Web Lessons" title="91 Web Lessons" border="0"/>
+         </a>
+    </div>
+
+    <div id='tutorialHead'>
+         <div class="tutorialTitle"><h1>PHP Ajax Login Validation Tutorial</h1></div>
+         <div class="tutorialLink"><a href="http://www.91weblessons.com/php-ajax-login-validation-tutorial" title="PHP Ajax Login Validation Tutorial"><h1>Tutorial Link</h1></a></div>
+
+    </div>
+
+    <div id="wrapper">
+         <table align="center" class="login_box">
+              <tr><td colspan="2" id="errorMessage"></td></tr>
+              <tr>
+                 <td>UserName</td>
+                 <td><input type="text" name="uname" id="uname"></td>
+              </tr>
+              <tr>
+                 <td>Password</td>
+                 <td><input type="password" name="password" id="password"></td>
+              </tr>
+              <tr id="button_box">
+                 <td>&nbsp</td>
+                 <td><input type="button" name="submit" value="Submit" class="button" onclick="validLogin()"></td>
+              </tr>
+              <tr><td colspan="2" id="flash"></td></tr>
+         </table>
+    </div>
+
+    <!--fotter section start-->
+    <div id="fotter">
+         <p>Copyright &copy; 2012 
+              <a href="http://www.91weblessons.com" title="91 Web Lessons" target="blank">91 Web Lessons</a>. 
+              All rights reserved.
+         </p>
+    </div>
+</div>
+</body>
+</html>

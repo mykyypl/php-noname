@@ -1,7 +1,6 @@
 <?php
-
-session_start();
-if (session_destroy()) {
-    header("Location: /administrator/login.php");
-}
+  session_start();
+  session_destroy();
+  header('location:login.php');
 ?>
+
